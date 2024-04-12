@@ -1,9 +1,21 @@
-#!/usr/bin/python3ls
+#!/usr/bin/python3
 
 import requests
 import sys
 
-if __name__ == "__main__":
+def fetch_employee_todo_list(employee_id):
+    """
+    Fetches employee information and their corresponding TODO list from the JSONPlaceholder API.
+
+    Args:
+        employee_id (int): The ID of the employee whose TODO list should be fetched.
+
+    Returns:
+        None
+
+    Raises:
+        requests.HTTPError: If there is an error while fetching data from the API.
+    """
     # Base URL for the JSONPlaceholder API
     url = "https://jsonplaceholder.typicode.com/"
 
@@ -13,24 +25,15 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Get the employee information using the provided employee ID
-    employee_id = sys.argv[1]
     user_response = requests.get(url + "users/{}".format(employee_id))
-
-    # Check if the request was successful
-    if user_response.status_code != 200:
-        print("Error: Unable to fetch employee information. Please check the employee ID.")
-        sys.exit(1)
+    user_response.raise_for_status()  # Raise an exception for HTTP errors
 
     user = user_response.json()
 
     # Get the to-do list for the employee using the provided employee ID
     params = {"userId": employee_id}
     todos_response = requests.get(url + "todos", params)
-
-    # Check if the request was successful
-    if todos_response.status_code != 200:
-        print("Error: Unable to fetch TODO list for the employee. Please check the employee ID.")
-        sys.exit(1)
+    todos_response.raise_for_status()  # Raise an exception for HTTP errors
 
     todos = todos_response.json()
 
@@ -43,3 +46,7 @@ if __name__ == "__main__":
 
     # Print the completed tasks one by one with indentation
     [print("\t{}".format(task)) for task in completed]
+
+if __name__ == "__main__":
+    fetch_employee_todo_list(int(sys.argv[1]))
+l
